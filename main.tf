@@ -1,33 +1,25 @@
-terraform {
-
-  required_version = "1.15.4"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "6.51.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-southeast-1"
+locals {
+  ami_id = data.aws_ami.ubuntu.id
 }
 
 resource "aws_instance" "app_server" {
-  ami           = "ami-0532913178263be11"
-  instance_type = "t2.micro"
+  ami           = local.ami_id
+  instance_type = var.app_server_instance_type
+
+  vpc_security_group_ids = [data.aws_security_group.default.id]
 
   tags = {
-    Name = "app-server"
+    Name = var.app_server_name
   }
 }
 
 resource "aws_instance" "db_server" {
-  ami           = "ami-0532913178263be11"
-  instance_type = "t3.large"
+  ami           = local.ami_id
+  instance_type = var.db_server_instance_type
+
+  vpc_security_group_ids = [data.aws_security_group.default.id]
 
   tags = {
-    Name = "db-server"
+    Name = var.db_server_name
   }
 }
